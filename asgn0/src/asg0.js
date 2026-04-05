@@ -124,6 +124,18 @@ function handleDrawOperationEvent(ctx, v1x, v1y, v2x, v2y, op, s) {
       drawVector(v3, "green", ctx);
       drawVector(v4, "green", ctx);
       break;
+    case "mag":
+      // magnitude, print to console magnitude
+      // of v1 and v2
+      console.log("Magnitude v1: "+v3.magnitude().toString());
+      console.log("Magnitude v2: "+v4.magnitude().toString());
+      break;
+    case "norm":
+      // normalize, draw normalized v1 and v2
+      v3.normalize();
+      v4.normalize();
+      drawVector(v3, "green", ctx);
+      drawVector(v4, "green", ctx);
     default:
       console.log("uh oh! operation fell through");
   }
