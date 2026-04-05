@@ -2,6 +2,7 @@
 
 const origin = {x: 200, y: 200};
 const v1 = new Vector3([0, 0, 0]);
+const v2 = new Vector3([0, 0, 0]);
 
 function main() {  
   // Retrieve <canvas> element
@@ -36,12 +37,35 @@ function main() {
   const v1x = document.getElementById("v1x");
   const v1y = document.getElementById("v1y");
   /*
-  4. (2 points) Add to your webpage an interface for the user to specify and draw a second vector v2.
+  4. (2 points) Add to your webpage an interface for the user to specify and draw a 
+  second vector v2.
   */
   const v2x = document.getElementById("v2x");
   const v2y = document.getElementById("v2y");
   drawB.addEventListener("click", (_) => handleDrawEvent(ctx, v1x ,v1y, v2x, v2y));
 
+  /*
+  5. (2 points) Add to your webpage an interface for the user to perform and visualize
+   the results of add, sub, div and mul operations. 
+  */
+  const opSelect = document.getElementById("op");
+  const scalar = document.getElementById("scalar");
+  let currOp = opSelect.value;
+  let currValue = 0;
+  // some nice little flavor code (juice!) to get disable scalar box dynamically
+  opSelect.addEventListener("click", (_) => {
+    currOp = opSelect.value;
+    if (currOp == "mult" || currOp == "div") {
+      scalar.disabled = false;
+      scalar.value = currValue;
+    } else {
+      scalar.disabled = true;
+      scalar.value = "";
+    }
+  })
+  scalar.addEventListener("change", (_) => {
+    currValue = scalar.value;
+  });
 }
 
 function drawVector(v, color, ctx) {
@@ -62,8 +86,7 @@ function handleDrawEvent(ctx, v1x, v1y, v2x, v2y) {
   v1.elements[0] = v1x.value;
   v1.elements[1] = v1y.value;
   drawVector(v1, "red", ctx);
-  // create + draw v2
-  const v2 = new Vector3([0, 0, 0]);
+  // read + draw v2
   v2.elements[0] = v2x.value;
   v2.elements[1] = v2y.value;
   drawVector(v2, "blue", ctx);
