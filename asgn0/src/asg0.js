@@ -50,6 +50,7 @@ function main() {
   */
   const opSelect = document.getElementById("op");
   const scalar = document.getElementById("scalar");
+  const opB = document.getElementById("btn1");
   let currOp = opSelect.value;
   let currValue = 0;
   // some nice little flavor code (juice!) to get disable scalar box dynamically
@@ -66,6 +67,7 @@ function main() {
   scalar.addEventListener("change", (_) => {
     currValue = scalar.value;
   });
+  opB.addEventListener("click", (_) => handleDrawOperationEvent(ctx, v1x ,v1y, v2x, v2y, currOp, scalar.value));
 }
 
 function drawVector(v, color, ctx) {
@@ -90,4 +92,39 @@ function handleDrawEvent(ctx, v1x, v1y, v2x, v2y) {
   v2.elements[0] = v2x.value;
   v2.elements[1] = v2y.value;
   drawVector(v2, "blue", ctx);
+}
+
+function handleDrawOperationEvent(ctx, v1x, v1y, v2x, v2y, op, s) {
+  // read and draw v1 and v2
+  handleDrawEvent(ctx, v1x, v1y, v2x, v2y);
+  let v3 = new Vector3([v1.elements[0], v1.elements[1], v1.elements[2]]);
+  let v4 = new Vector3([v2.elements[0], v2.elements[1], v2.elements[2]]);
+  switch (op){
+    case "add":
+      // add, draw v3 = v1 + v2
+      v3.add(v2);
+      drawVector(v3, "green", ctx);
+      break;
+    case "sub":
+      // sub, draw v3 = v1 - v2
+      v3.sub(v2);
+      drawVector(v3, "green", ctx);
+      break;
+    case "mult":
+      // mult, draw v3 = v1 * s and v4 = v2 * s
+      v3.mul(s);
+      v4.mul(s);
+      drawVector(v3, "green", ctx);
+      drawVector(v4, "green", ctx);
+      break;
+    case "div":
+      // div, draw v3 = v1 / s and v4 = v2 / s
+      v3.div(s);
+      v4.div(s);
+      drawVector(v3, "green", ctx);
+      drawVector(v4, "green", ctx);
+      break;
+    default:
+      console.log("uh oh! operation fell through");
+  }
 }
