@@ -1,5 +1,6 @@
 // Based on DrawTriangle.js (c) 2012 matsuda
 
+const origin = {x: 200, y: 200}
 const v1 = new Vector3([2.25, 2.25, 0])
 
 function main() {  
@@ -28,6 +29,7 @@ function main() {
 function drawVector(v, color, ctx) {
   ctx.beginPath();
   ctx.strokeStyle = color;
-  ctx.lineTo(v.elements[0]*20, v.elements[1]*20);
+  ctx.moveTo(origin.x, origin.y);
+  ctx.lineTo((origin.x + v.elements[0] * 20), (origin.y - v.elements[1] * 20));
   ctx.stroke();
 }
