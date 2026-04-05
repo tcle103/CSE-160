@@ -35,7 +35,12 @@ function main() {
   const drawB = document.getElementById("btn");
   const v1x = document.getElementById("v1x");
   const v1y = document.getElementById("v1y");
-  drawB.addEventListener("click", (_) => handleDrawEvent(ctx, v1x ,v1y));
+  /*
+  4. (2 points) Add to your webpage an interface for the user to specify and draw a second vector v2.
+  */
+  const v2x = document.getElementById("v2x");
+  const v2y = document.getElementById("v2y");
+  drawB.addEventListener("click", (_) => handleDrawEvent(ctx, v1x ,v1y, v2x, v2y));
 
 }
 
@@ -47,14 +52,19 @@ function drawVector(v, color, ctx) {
   ctx.stroke();
 }
 
-function handleDrawEvent(ctx, v1x, v1y) {
+function handleDrawEvent(ctx, v1x, v1y, v2x, v2y) {
   // clear the canvas
   ctx.clearRect(0, 0, 400, 400);
   // Draw black canvas
   ctx.fillStyle = 'rgba(0, 0, 0, 1.0)';
   ctx.fillRect(0, 0, 400, 400);
-  // create v1
+  // read + draw v1
   v1.elements[0] = v1x.value;
   v1.elements[1] = v1y.value;
   drawVector(v1, "red", ctx);
+  // create + draw v2
+  const v2 = new Vector3([0, 0, 0]);
+  v2.elements[0] = v2x.value;
+  v2.elements[1] = v2y.value;
+  drawVector(v2, "blue", ctx);
 }
