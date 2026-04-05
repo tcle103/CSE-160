@@ -46,7 +46,10 @@ function main() {
 
   /*
   5. (2 points) Add to your webpage an interface for the user to perform and visualize
-   the results of add, sub, div and mul operations. 
+  the results of add, sub, div and mul operations. 
+
+  6. (1 points) Add to your webpage an interface for the user to perform and visualize 
+  the results of magnitude and normalize operations.
   */
   const opSelect = document.getElementById("op");
   const scalar = document.getElementById("scalar");
