@@ -53,6 +53,9 @@ function main() {
 
   7. (1 points) Add to your webpage an interface for the user to calculate and visualize 
   the angle between the vectors v1 and v2.
+
+  8. (1 points) Add to your webpage an interface for the user to calculate and area of the 
+  triangle formed by vectors v1 and v2.
   */
   const opSelect = document.getElementById("op");
   const scalar = document.getElementById("scalar");
@@ -154,13 +157,21 @@ function handleDrawOperationEvent(ctx, v1x, v1y, v2x, v2y, op, s) {
       // angle between, print to console
       console.log("Angle: " + angleBetween(v3, v4).toString());
       break;
+    case "area":
+      // area
+      console.log("Area of the triangle: " + areaTriangle(v3, v4).toString());
+      break;
     default:
       console.log("uh oh! operation fell through");
   }
 }
 
 function angleBetween(v1, v2) {
-  console.log(Vector3.dot(v1, v2));
   a = Math.acos(Vector3.dot(v1, v2) / (v1.magnitude() * v2.magnitude())) * (180 / Math.PI);
+  return a;
+}
+
+function areaTriangle(v1, v2) {
+  a = 1/2 * Vector3.cross(v1, v2).magnitude();
   return a;
 }
