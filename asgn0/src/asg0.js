@@ -50,11 +50,21 @@ function main() {
 
   6. (1 points) Add to your webpage an interface for the user to perform and visualize 
   the results of magnitude and normalize operations.
+
+  7. (1 points) Add to your webpage an interface for the user to calculate and visualize 
+  the angle between the vectors v1 and v2.
   */
   const opSelect = document.getElementById("op");
   const scalar = document.getElementById("scalar");
   const opB = document.getElementById("btn1");
   let currOp = opSelect.value;
+  if (currOp == "mult" || currOp == "div") {
+      scalar.disabled = false;
+      scalar.value = currValue;
+    } else {
+      scalar.disabled = true;
+      scalar.value = "";
+    }
   let currValue = 0;
   // some nice little flavor code (juice!) to get disable scalar box dynamically
   opSelect.addEventListener("click", (_) => {
@@ -139,7 +149,18 @@ function handleDrawOperationEvent(ctx, v1x, v1y, v2x, v2y, op, s) {
       v4.normalize();
       drawVector(v3, "green", ctx);
       drawVector(v4, "green", ctx);
+      break;
+    case "angle":
+      // angle between, print to console
+      console.log("Angle: " + angleBetween(v3, v4).toString());
+      break;
     default:
       console.log("uh oh! operation fell through");
   }
+}
+
+function angleBetween(v1, v2) {
+  console.log(Vector3.dot(v1, v2));
+  a = Math.acos(Vector3.dot(v1, v2) / (v1.magnitude() * v2.magnitude())) * (180 / Math.PI);
+  return a;
 }
