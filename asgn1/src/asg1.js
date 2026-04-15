@@ -49,6 +49,12 @@ function main() {
     canvas.onmousedown = (ev) => {
         click(ev, gl, canvas, a_Position, u_FragColor, u_Size);
     }
+    // 8. Draw a shape when the mouse is held down and there is mouse motion
+    canvas.onmousemove = (ev) => {
+        if (ev.buttons == 1) {
+            click(ev, gl, canvas, a_Position, u_FragColor, u_Size);
+        }
+    }
 
     // 7. Have a button to clear the canvas
     let clearButt = document.getElementById("clear");
@@ -70,7 +76,7 @@ function setupWebGL() {
     }
 
     // Get the rendering context for WebGL
-    var gl = getWebGLContext(canvas);
+    var gl = canvas.getContext("webgl", { preserveDrawingBuffer: true});
     if (!gl) {
         console.log('Failed to get the rendering context for WebGL');
         return;
