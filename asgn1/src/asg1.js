@@ -14,9 +14,33 @@ var FSHADER_SOURCE =
     'void main() {\n' +
     '  gl_FragColor = u_FragColor;\n' +
     '}\n';
-var g_points = [];  // The array for the position of a mouse press
-var g_colors = [];  // The array to store the color of a point
-var g_size = [];
+/*
+6. Have a single variable which contains the list of all shapes that 
+need to be drawn. Have a class which contains the information for a 
+Point.
+*/
+var shapesList = [];
+class Point {
+    constructor(pos, col, size) {
+        this.pos = pos;
+        this.col = col;
+        this.size = size;
+    }
+    render(gl, a_Position, u_FragColor, u_Size) {
+        var xy = this.pos;
+        var rgba = this.col;
+        var size = this.size;
+
+        // Pass the position of a point to a_Position variable
+        gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
+        // Pass the color of a point to u_FragColor variable
+        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+        // Pass size of point to u_Size
+        gl.uniform1f(u_Size, size);
+        // Draw
+        gl.drawArrays(gl.POINTS, 0, 1);
+    }
+};
 
 function main() {
 
@@ -90,20 +114,9 @@ function renderAllShapes(gl, a_Position, u_FragColor, u_Size) {
     // Clear <canvas>
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    var len = g_points.length;
+    var len = shapesList.length;
     for (var i = 0; i < len; i++) {
-        var xy = g_points[i];
-        var rgba = g_colors[i];
-        var size = g_size[i];
-
-        // Pass the position of a point to a_Position variable
-        gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
-        // Pass the color of a point to u_FragColor variable
-        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
-        // Pass size of point to u_Size
-        gl.uniform1f(u_Size, size);
-        // Draw
-        gl.drawArrays(gl.POINTS, 0, 1);
+       shapesList[i].render(gl, a_Position, u_FragColor, u_Size);
     }
 }
 
@@ -118,24 +131,20 @@ function click(ev, gl, canvas, a_Position, u_FragColor, u_Size) {
     /*
     4. Have HTML sliders for choosing the RGB color to paint
     */
-   let rslide = document.getElementById("r");
-   let gslide = document.getElementById("g");
-   let bslide = document.getElementById("b");
+    let rslide = document.getElementById("r");
+    let gslide = document.getElementById("g");
+    let bslide = document.getElementById("b");
 
-   /*
-   5. Have an HTML slider for choosing the shape size 
-   */
-  let sSlide = document.getElementById("s");
+    /*
+    5. Have an HTML slider for choosing the shape size 
+    */
+    let sSlide = document.getElementById("s");
 
-    // Store the coordinates to g_points array
-    g_points.push([x, y]);
-    // Store color from sliders
-    g_colors.push([rslide.value / 100, 
-        gslide.value / 100,
-        bslide.value / 100,
-        1.0])
-    // Store size
-    g_size.push(sSlide.value);
+    let p = new Point([x, y], [rslide.value / 100,
+    gslide.value / 100,
+    bslide.value / 100,
+        1.0], sSlide.value);
+    shapesList.push(p);
 
     renderAllShapes(gl, a_Position, u_FragColor, u_Size);
 }
