@@ -1,9 +1,10 @@
 // Vertex shader program
 var VSHADER_SOURCE =
     'attribute vec4 a_Position;\n' +
+    'uniform float u_Size;\n' +
     'void main() {\n' +
     '  gl_Position = a_Position;\n' +
-    '  gl_PointSize = 10.0;\n' +
+    '  gl_PointSize = u_Size;\n' +
     '}\n';
 
 // Fragment shader program
@@ -15,13 +16,14 @@ var FSHADER_SOURCE =
     '}\n';
 var g_points = [];  // The array for the position of a mouse press
 var g_colors = [];  // The array to store the color of a point
+var g_size = [];
 
 function main() {
 
     let [canvas, gl] = setupWebGL();
-    let [a_Position, u_FragColor] = connectVariablesToGLSL(gl);
+    let [a_Position, u_FragColor, u_Size] = connectVariablesToGLSL(gl);
     canvas.onmousedown = (ev) => {
-        click(ev, gl, canvas, a_Position, u_FragColor);
+        click(ev, gl, canvas, a_Position, u_FragColor, u_Size);
     }
 }
 
@@ -74,10 +76,17 @@ function connectVariablesToGLSL(gl) {
         return;
     }
 
-    return [a_Position, u_FragColor];
+    // Get storage location of u_Size
+    var u_Size = gl.getUniformLocation(gl.program, 'u_Size');
+    if (!u_Size) {
+        console.log('no u_Size...');
+        return;
+    }
+
+    return [a_Position, u_FragColor, u_Size];
 }
 
-function renderAllShapes(gl, a_Position, u_FragColor) {
+function renderAllShapes(gl, a_Position, u_FragColor, u_Size) {
     // Clear <canvas>
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -85,17 +94,20 @@ function renderAllShapes(gl, a_Position, u_FragColor) {
     for (var i = 0; i < len; i++) {
         var xy = g_points[i];
         var rgba = g_colors[i];
+        var size = g_size[i];
 
         // Pass the position of a point to a_Position variable
         gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
         // Pass the color of a point to u_FragColor variable
         gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+        // Pass size of point to u_Size
+        gl.uniform1f(u_Size, size);
         // Draw
         gl.drawArrays(gl.POINTS, 0, 1);
     }
 }
 
-function click(ev, gl, canvas, a_Position, u_FragColor) {
+function click(ev, gl, canvas, a_Position, u_FragColor, u_Size) {
     var x = ev.clientX; // x coordinate of a mouse pointer
     var y = ev.clientY; // y coordinate of a mouse pointer
     var rect = ev.target.getBoundingClientRect();
@@ -110,6 +122,11 @@ function click(ev, gl, canvas, a_Position, u_FragColor) {
    let gslide = document.getElementById("g");
    let bslide = document.getElementById("b");
 
+   /*
+   5. Have an HTML slider for choosing the shape size 
+   */
+  let sSlide = document.getElementById("s");
+
     // Store the coordinates to g_points array
     g_points.push([x, y]);
     // Store color from sliders
@@ -117,6 +134,8 @@ function click(ev, gl, canvas, a_Position, u_FragColor) {
         gslide.value / 100,
         bslide.value / 100,
         1.0])
+    // Store size
+    g_size.push(sSlide.value);
 
-    renderAllShapes(gl, a_Position, u_FragColor);
+    renderAllShapes(gl, a_Position, u_FragColor, u_Size);
 }
