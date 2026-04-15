@@ -49,6 +49,12 @@ function main() {
     canvas.onmousedown = (ev) => {
         click(ev, gl, canvas, a_Position, u_FragColor, u_Size);
     }
+
+    // 7. Have a button to clear the canvas
+    let clearButt = document.getElementById("clear");
+    clearButt.onmousedown = (ev) => {
+        clear(gl, a_Position, u_FragColor, u_Size);
+    }
 }
 
 /*
@@ -146,5 +152,10 @@ function click(ev, gl, canvas, a_Position, u_FragColor, u_Size) {
         1.0], sSlide.value);
     shapesList.push(p);
 
+    renderAllShapes(gl, a_Position, u_FragColor, u_Size);
+}
+
+function clear(gl, a_Position, u_FragColor, u_Size) {
+    shapesList = [];
     renderAllShapes(gl, a_Position, u_FragColor, u_Size);
 }
