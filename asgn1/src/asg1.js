@@ -103,16 +103,20 @@ function click(ev, gl, canvas, a_Position, u_FragColor) {
     x = ((x - rect.left) - canvas.width / 2) / (canvas.width / 2);
     y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
 
+    /*
+    4. Have HTML sliders for choosing the RGB color to paint
+    */
+   let rslide = document.getElementById("r");
+   let gslide = document.getElementById("g");
+   let bslide = document.getElementById("b");
+
     // Store the coordinates to g_points array
     g_points.push([x, y]);
-    // Store the coordinates to g_points array
-    if (x >= 0.0 && y >= 0.0) {      // First quadrant
-        g_colors.push([1.0, 0.0, 0.0, 1.0]);  // Red
-    } else if (x < 0.0 && y < 0.0) { // Third quadrant
-        g_colors.push([0.0, 1.0, 0.0, 1.0]);  // Green
-    } else {                         // Others
-        g_colors.push([1.0, 1.0, 1.0, 1.0]);  // White
-    }
+    // Store color from sliders
+    g_colors.push([rslide.value / 100, 
+        gslide.value / 100,
+        bslide.value / 100,
+        1.0])
 
     renderAllShapes(gl, a_Position, u_FragColor);
 }
