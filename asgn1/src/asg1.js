@@ -22,7 +22,8 @@ Point.
 var shapesList = [];
 class Point {
     constructor(pos, col, size) {
-        this.pos = pos;
+        this.type =
+            this.pos = pos;
         this.col = col;
         this.size = size;
     }
@@ -41,6 +42,29 @@ class Point {
         gl.drawArrays(gl.POINTS, 0, 1);
     }
 };
+class Triangle {
+    constructor(pos, col, size) {
+        this.pos = pos;
+        this.col = col;
+        this.size = size;
+    }
+    render(gl, a_Position, u_FragColor, u_Size) {
+        var xy = this.pos;
+        var rgba = this.col;
+        var size = this.size;
+
+        // Pass the color of a point to u_FragColor variable
+        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+        // Pass size of point to u_Size
+        gl.uniform1f(u_Size, size);
+
+        let d = this.size / 200.0
+        drawTriangle([xy[0], xy[1], xy[0] + d, xy[1], xy[0], xy[1] + d],
+            gl, a_Position);
+    }
+}
+
+let currShape = "Point";
 
 function main() {
 
@@ -58,8 +82,17 @@ function main() {
 
     // 7. Have a button to clear the canvas
     let clearButt = document.getElementById("clear");
-    clearButt.onmousedown = (ev) => {
+    clearButt.onmousedown = (_) => {
         clear(gl, a_Position, u_FragColor, u_Size);
+    }
+
+    let pButt = document.getElementById("p");
+    pButt.onmousedown = (_) => {
+        currShape = pButt.value;
+    }
+    let tButt = document.getElementById("t");
+    tButt.onmousedown = (_) => {
+        currShape = tButt.value;
     }
 }
 
@@ -76,7 +109,7 @@ function setupWebGL() {
     }
 
     // Get the rendering context for WebGL
-    var gl = canvas.getContext("webgl", { preserveDrawingBuffer: true});
+    var gl = canvas.getContext("webgl", { preserveDrawingBuffer: true });
     if (!gl) {
         console.log('Failed to get the rendering context for WebGL');
         return;
@@ -128,7 +161,7 @@ function renderAllShapes(gl, a_Position, u_FragColor, u_Size) {
 
     var len = shapesList.length;
     for (var i = 0; i < len; i++) {
-       shapesList[i].render(gl, a_Position, u_FragColor, u_Size);
+        shapesList[i].render(gl, a_Position, u_FragColor, u_Size);
     }
 }
 
@@ -152,10 +185,21 @@ function click(ev, gl, canvas, a_Position, u_FragColor, u_Size) {
     */
     let sSlide = document.getElementById("s");
 
-    let p = new Point([x, y], [rslide.value / 100,
-    gslide.value / 100,
-    bslide.value / 100,
-        1.0], sSlide.value);
+    let p;
+    switch (currShape) {
+        case "Triangle":
+            p = new Triangle([x, y], [rslide.value / 100,
+            gslide.value / 100,
+            bslide.value / 100,
+                1.0], sSlide.value);
+            break;
+        default:
+            p = new Point([x, y], [rslide.value / 100,
+            gslide.value / 100,
+            bslide.value / 100,
+                1.0], sSlide.value);
+            break;
+    }
     shapesList.push(p);
 
     renderAllShapes(gl, a_Position, u_FragColor, u_Size);
@@ -164,4 +208,34 @@ function click(ev, gl, canvas, a_Position, u_FragColor, u_Size) {
 function clear(gl, a_Position, u_FragColor, u_Size) {
     shapesList = [];
     renderAllShapes(gl, a_Position, u_FragColor, u_Size);
+}
+
+/*
+9. Have a button to draw triangles 
+*/
+function drawTriangle(v, gl, a_Position) {
+    var n = 3; // The number of vertices
+
+    // Create a buffer object
+    var vertexBuffer = gl.createBuffer();
+    if (!vertexBuffer) {
+        console.log('Failed to create the buffer object');
+        return -1;
+    }
+
+    // Bind the buffer object to target
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    // Write date into the buffer object
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v), gl.DYNAMIC_DRAW);
+
+    // Assign the buffer object to a_Position variable
+    gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+
+    // Enable the assignment to a_Position variable
+    gl.enableVertexAttribArray(a_Position);
+
+    // Draw the triangle
+    gl.drawArrays(gl.TRIANGLES, 0, n);
+
+    gl.disableVertexAttribArray(a_Position);
 }
