@@ -22,8 +22,7 @@ Point.
 var shapesList = [];
 class Point {
     constructor(pos, col, size) {
-        this.type =
-            this.pos = pos;
+        this.pos = pos;
         this.col = col;
         this.size = size;
     }
@@ -42,11 +41,28 @@ class Point {
         gl.drawArrays(gl.POINTS, 0, 1);
     }
 };
-class Triangle {
-    constructor(pos, col, size) {
-        this.pos = pos;
-        this.col = col;
-        this.size = size;
+// 9. Have a button to draw triangles 
+class Triangle extends Point {
+    render(gl, a_Position, u_FragColor, u_Size) {
+        var xy = this.pos;
+        var rgba = this.col;
+        var size = this.size;
+
+        // Pass the color of a point to u_FragColor variable
+        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+        // Pass size of point to u_Size
+        gl.uniform1f(u_Size, size);
+
+        let d = this.size / 200.0;
+        drawTriangle([xy[0], xy[1], xy[0] + d, xy[1], xy[0], xy[1] + d],
+            gl, a_Position);
+    }
+}
+// 10. Have a button to draw circles
+class Circle extends Point {
+    constructor(pos, col, size, seg) {
+        super(pos, col, size);
+        this.seg = seg;
     }
     render(gl, a_Position, u_FragColor, u_Size) {
         var xy = this.pos;
@@ -58,9 +74,9 @@ class Triangle {
         // Pass size of point to u_Size
         gl.uniform1f(u_Size, size);
 
-        let d = this.size / 200.0
-        drawTriangle([xy[0], xy[1], xy[0] + d, xy[1], xy[0], xy[1] + d],
-            gl, a_Position);
+
+        let r = this.size/ 400.0;
+        drawCircle(xy, gl, a_Position, this.seg, r);
     }
 }
 
@@ -93,6 +109,10 @@ function main() {
     let tButt = document.getElementById("t");
     tButt.onmousedown = (_) => {
         currShape = tButt.value;
+    }
+    let cButt = document.getElementById("c");
+    cButt.onmousedown = (_) => {
+        currShape = cButt.value;
     }
 }
 
@@ -173,17 +193,18 @@ function click(ev, gl, canvas, a_Position, u_FragColor, u_Size) {
     x = ((x - rect.left) - canvas.width / 2) / (canvas.width / 2);
     y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
 
-    /*
-    4. Have HTML sliders for choosing the RGB color to paint
-    */
+    // 4. Have HTML sliders for choosing the RGB color to paint
     let rslide = document.getElementById("r");
     let gslide = document.getElementById("g");
     let bslide = document.getElementById("b");
 
-    /*
-    5. Have an HTML slider for choosing the shape size 
-    */
+    // 5. Have an HTML slider for choosing the shape size 
     let sSlide = document.getElementById("s");
+
+    /* 11. Have a slider to determine the number of segments 
+        in the circle 
+    */
+    let segSlide = document.getElementById("seg");
 
     let p;
     switch (currShape) {
@@ -192,6 +213,12 @@ function click(ev, gl, canvas, a_Position, u_FragColor, u_Size) {
             gslide.value / 100,
             bslide.value / 100,
                 1.0], sSlide.value);
+            break;
+        case "Circle":
+            p =  p = new Circle([x, y], [rslide.value / 100,
+            gslide.value / 100,
+            bslide.value / 100,
+                1.0], sSlide.value, segSlide.value);
             break;
         default:
             p = new Point([x, y], [rslide.value / 100,
@@ -210,9 +237,6 @@ function clear(gl, a_Position, u_FragColor, u_Size) {
     renderAllShapes(gl, a_Position, u_FragColor, u_Size);
 }
 
-/*
-9. Have a button to draw triangles 
-*/
 function drawTriangle(v, gl, a_Position) {
     var n = 3; // The number of vertices
 
@@ -238,4 +262,18 @@ function drawTriangle(v, gl, a_Position) {
     gl.drawArrays(gl.TRIANGLES, 0, n);
 
     gl.disableVertexAttribArray(a_Position);
+}
+
+function drawCircle(pos, gl, a_Position, seg, r) {
+    let v = []
+    let deg1;
+    let deg2;
+    for (let i = 1; i < seg + 1; i++) {
+        deg1 = (360 * (i-1)/ seg) * (Math.PI / 180);
+        deg2 = (360 * i / seg) * (Math.PI / 180);
+        v = [pos[0], pos[1],
+            r*Math.cos(deg1) + pos[0], r*Math.sin(deg1) + pos[1],
+            r*Math.cos(deg2) + pos[0], r*Math.sin(deg2) + pos[1] ];
+        drawTriangle(v, gl, a_Position);
+    }
 }
