@@ -111,6 +111,9 @@ function main() {
 
     }
 
+    let f = document.getElementById("fish");
+    f.style.display = "none";
+
     // 7. Have a button to clear the canvas
     let clearButt = document.getElementById("clear");
     clearButt.onmousedown = (_) => {
@@ -119,18 +122,21 @@ function main() {
 
     let pButt = document.getElementById("p");
     pButt.onmousedown = (_) => {
+        f.style.display = "none";
         currShape = pButt.value;
         fancy = false;
         renderAllShapes(gl, a_Position, u_FragColor, u_Size);
     }
     let tButt = document.getElementById("t");
     tButt.onmousedown = (_) => {
+        f.style.display = "none";
         currShape = tButt.value;
         fancy = false;
         renderAllShapes(gl, a_Position, u_FragColor, u_Size);
     }
     let cButt = document.getElementById("c");
     cButt.onmousedown = (_) => {
+        f.style.display = "none";
         currShape = cButt.value;
         fancy = false;
         renderAllShapes(gl, a_Position, u_FragColor, u_Size);
@@ -139,6 +145,7 @@ function main() {
     // 13. Awesomeness!
     let fButt = document.getElementById("f");
     fButt.onmousedown = (_) => {
+        f.style.display = "inline flow-root";
         currShape = fButt.value;
         function draw() {
                     drawFancy(gl, a_Position, u_FragColor, u_Size);
