@@ -112,21 +112,21 @@ function main() {
 
     let pButt = document.getElementById("p");
     pButt.onmousedown = (_) => {
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
         currShape = pButt.value;
         fancy = false;
+        renderAllShapes(gl, a_Position, u_FragColor, u_Size);
     }
     let tButt = document.getElementById("t");
     tButt.onmousedown = (_) => {
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
         currShape = tButt.value;
         fancy = false;
+        renderAllShapes(gl, a_Position, u_FragColor, u_Size);
     }
     let cButt = document.getElementById("c");
     cButt.onmousedown = (_) => {
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
         currShape = cButt.value;
         fancy = false;
+        renderAllShapes(gl, a_Position, u_FragColor, u_Size);
     }
 }
 
@@ -190,6 +190,7 @@ function connectVariablesToGLSL(gl) {
 }
 
 function renderAllShapes(gl, a_Position, u_FragColor, u_Size) {
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
     // Clear <canvas>
     gl.clear(gl.COLOR_BUFFER_BIT);
 
