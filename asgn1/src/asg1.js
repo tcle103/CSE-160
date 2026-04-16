@@ -397,8 +397,8 @@ function fishTrack(gl, a_Position, u_FragColor, u_Size) {
     yp = y - currPos[1];
     xp = x - currPos[0];
 
-    currPos[0] += 0.02 * xp;
-    currPos[1] += 0.02 * yp;
+    currPos[0] += Math.min(0.02 * xp, 0.3);
+    currPos[1] += Math.min(0.02 * yp, 0.3);
 
     drawFancy(gl, a_Position, u_FragColor, u_Size);
     drawFish(currPos, gl, a_Position, u_FragColor, u_Size);
