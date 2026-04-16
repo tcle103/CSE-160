@@ -84,13 +84,18 @@ let currShape = "Fish?";
 let currPos = [0, 0];
 let targetPos = [0, 0];
 let dir = 1;
+let food = [];
 
 function main() {
 
     let [canvas, gl] = setupWebGL();
     let [a_Position, u_FragColor, u_Size] = connectVariablesToGLSL(gl);
     canvas.onmousedown = (ev) => {
-        click(ev, gl, canvas, a_Position, u_FragColor, u_Size);
+        if (!fancy) {
+            click(ev, gl, canvas, a_Position, u_FragColor, u_Size);
+        } else {
+            spawnFood(ev, canvas);
+        }
     }
     // 8. Draw a shape when the mouse is held down and there is mouse motion
     canvas.onmousemove = (ev) => {
@@ -99,7 +104,9 @@ function main() {
                 click(ev, gl, canvas, a_Position, u_FragColor, u_Size);
             }
         } else {
-            setTarget(ev, canvas);
+            if (food.length <= 0) {
+                setTarget(ev, canvas);
+            }
         }
 
     }
@@ -127,6 +134,22 @@ function main() {
         currShape = cButt.value;
         fancy = false;
         renderAllShapes(gl, a_Position, u_FragColor, u_Size);
+    }
+    // 12. Draw a picture
+    // 13. Awesomeness!
+    let fButt = document.getElementById("f");
+    fButt.onmousedown = (_) => {
+        currShape = fButt.value;
+        function draw() {
+                    drawFancy(gl, a_Position, u_FragColor, u_Size);
+                    fishTrack(gl, a_Position, u_FragColor, u_Size);
+                    manageFood(gl, a_Position, u_FragColor, u_Size);
+                    if (fancy) {
+                        requestAnimationFrame(draw);
+                    }
+                }
+                requestAnimationFrame(draw);
+                fancy = true;
     }
 }
 
@@ -236,16 +259,6 @@ function click(ev, gl, canvas, a_Position, u_FragColor, u_Size) {
                 bslide.value / 100,
                     1.0], sSlide.value, segSlide.value);
                 break;
-            case "Fish?":
-                function draw() {
-                    fishTrack(gl, a_Position, u_FragColor, u_Size);
-                    if (fancy) {
-                        requestAnimationFrame(draw);
-                    }
-                }
-                requestAnimationFrame(draw);
-                fancy = true;
-                break;
             default:
                 p = new Point([x, y], [rslide.value / 100,
                 gslide.value / 100,
@@ -322,6 +335,43 @@ function drawRect(corners, gl, a_Position) {
 function drawFancy(gl, a_Position, u_FragColor, u_Size) {
     gl.clearColor(0.3, 0.4, 0.8, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // Pass size of point to u_Size
+    gl.uniform1f(u_Size, 10.0);
+
+    // sand
+    gl.uniform4f(u_FragColor, 1.0, 0.9, 0.7, 1.0);
+    drawRect([-1, -0.9, 1, -1], gl, a_Position);
+
+    // kelp
+    gl.uniform4f(u_FragColor, 0.2, 0.8, 0.5, 1.0);
+    // T
+    drawTriangle([-0.5, -1,  -0.5, -0.8,  -0.6, -0.9], gl, a_Position);
+    drawTriangle([-0.5, -0.8,  -0.5, -0.6,  -0.4, -0.7], gl, a_Position);
+    drawTriangle([-0.5, -0.6,  -0.5, -0.4, -0.6, -0.5], gl, a_Position);
+    drawTriangle([-0.5, -0.4, -0.5, -0.2, -0.4, -0.3], gl, a_Position);
+    drawTriangle([-0.9, -0.2,  -0.8, -0.3,  -0.7, -0.2], gl, a_Position);
+    drawTriangle([-0.7, -0.2, -0.5, -0.2, -0.6, -0.1], gl, a_Position);
+    drawTriangle([-0.5, -0.2,  -0.4, -0.3,  -0.3, -0.2], gl, a_Position);
+    drawTriangle([-0.3, -0.2, -0.1, -0.2, -0.2, -0.1], gl, a_Position);
+    // L
+    drawTriangle([0.3, -1, 0.4, -0.9, 0.3, -0.8], gl, a_Position);
+    drawTriangle([0.3, -0.8,  0.3, -0.6,  0.2, -0.7], gl, a_Position);
+    drawTriangle([0.3, -0.6, 0.4, -0.5, 0.3, -0.4], gl, a_Position);
+    drawTriangle([0.3, -0.4,  0.3, -0.2,  0.2, -0.3], gl, a_Position);
+    drawTriangle([0.3, -1,  0.5, -1,  0.4, -0.9], gl, a_Position);
+    drawTriangle([0.5, -1,  0.7, -1,  0.6, -0.9], gl, a_Position);
+    drawTriangle([0.7, -1,  0.9, -1,  0.8, -0.9], gl, a_Position);
+
+    // bubbles
+    gl.uniform4f(u_FragColor, 0.5, 0.9, 0.9, 1.0);
+    drawRect([-0.95, 0.75,  -0.85, 0.85], gl, a_Position);
+    drawRect([-0.75, 0.55,  -0.7, 0.5], gl, a_Position);
+    drawRect([-0.934, 0.134,  -0.866, 0.066], gl, a_Position);
+    drawRect([0.266, 0.734,  0.334, 0.666], gl, a_Position);
+    drawRect([0.85, 0.75,  0.9, 0.7], gl, a_Position);
+    drawRect([0.666, 0.934,  0.734, 0.866], gl, a_Position);
+    drawRect([0.65, -0.25,  0.75, -0.35], gl, a_Position);
 }
 
 function drawFish(p, gl, a_Position, u_FragColor, u_Size) {
@@ -403,4 +453,38 @@ function fishTrack(gl, a_Position, u_FragColor, u_Size) {
 
     drawFancy(gl, a_Position, u_FragColor, u_Size);
     drawFish(currPos, gl, a_Position, u_FragColor, u_Size);
+}
+
+function spawnFood(ev, canvas) {
+    console.log("hi");
+    var x = ev.clientX; // x coordinate of a mouse pointer
+    var y = ev.clientY; // y coordinate of a mouse pointer
+    var rect = ev.target.getBoundingClientRect();
+
+    x = ((x - rect.left) - canvas.width / 2) / (canvas.width / 2);
+    y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
+
+    let f = new Triangle([x,y], [0.6, 0.5, 0.3, 1.0], 20);
+    food.push(f);
+    console.log(f);
+}
+
+function manageFood(gl, a_Position, u_FragColor, u_Size) {
+    if (food.length > 0) {
+        for (let i = 0; i < food.length; i++) {
+            if (food[i].pos[1] > -0.9) {
+                food[i].pos[1] -= 0.02;
+            }
+            food[i].render(gl, a_Position, u_FragColor, u_Size);
+        }
+        if (currPos[0].toPrecision(1) == food[0].pos[0].toPrecision(1) && 
+                currPos[1].toPrecision(1) == food[0].pos[1].toPrecision(1)) {
+            
+            food.shift();
+            drawFancy(gl, a_Position, u_FragColor, u_Size);
+            drawFish(currPos, gl, a_Position, u_FragColor, u_Size);
+        } else {
+            targetPos = food[0].pos;
+        }
+    }
 }
