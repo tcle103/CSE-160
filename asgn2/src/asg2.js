@@ -23,6 +23,8 @@ let xs1Rot = 20;
 let xs2Rot = 30;
 let xs3Rot = 30;
 let xlRot = 15;
+let zarmR = -20;
+let zarmL = 20;
 
 function main() {
 
@@ -355,30 +357,32 @@ function drawPik() {
 
     // arms
     let armR = new Matrix4;
-    armR.translate(0.055,-0.05,-0.02);
+    armR.translate(0.05,-0.05,-0.02);
+    armR.rotate(zarmR, 0, 0, 1);
     armR.scale(0.12,0.04,0.04);
     let aR = new Cube(yellow);
     aR.setMatrix(armR);
     shapesList.push(aR);
 
     let armL = new Matrix4;
-    armL.translate(-0.175,-0.05,-0.02);
-    armL.scale(0.12,0.04,0.04);
+    armL.translate(-0.05,-0.05,-0.02);
+    armL.rotate(zarmL,0,0,1);
+    armL.scale(-0.12,0.04,0.04);
     let aL = new Cube(yellow);
     aL.setMatrix(armL);
     shapesList.push(aL);
 
     // leg
     let legR = new Matrix4;
-    legR.translate(0.015,-0.26,-0.02);
-    legR.scale(0.04,0.08,0.04);
+    legR.translate(0.015,-0.18,-0.02);
+    legR.scale(0.04,-0.08,0.04);
     let lR = new Cube(yellow);
     lR.setMatrix(legR);
     shapesList.push(lR);
 
     let legL = new Matrix4;
-    legL.translate(-0.055,-0.26,-0.02);
-    legL.scale(0.04,0.08,0.04);
+    legL.translate(-0.055,-0.18,-0.02);
+    legL.scale(0.04,-0.08,0.04);
     let lL = new Cube(yellow);
     lL.setMatrix(legL);
     shapesList.push(lL);
